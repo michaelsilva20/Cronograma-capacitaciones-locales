@@ -1,0 +1,416 @@
+
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cronograma de Capacitación 2026 — ALCEA / ASSA ABLOY</title>
+  <meta name="description" content="Cronograma de capacitación 2026 de ALCEA / ASSA ABLOY con filtros, temarios por evento y exportación a CSV." />
+  <meta name="color-scheme" content="light only">
+  <style>
+    :root{
+      --alcea-purple: #6A1B9A;
+      --alcea-purple-600: #7B1FA2;
+      --assa-black: #000000;
+      --month-bg: #260E56;           /* Color de encabezado mensual */
+      --bg: #FFFFFF;
+      --fg: #1B1B1B;
+      --muted: #5F6B7A;
+      --card: #FFFFFF;
+      --border: #E6E8EC;
+      --chip: #F4F5F7;
+      --focus: #1A73E8;
+      --shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial;}
+    img{max-width:100%;height:auto;display:block}
+    .wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+
+    /* Header */
+    header{border-bottom:1px solid var(--border);background:#fff}
+    .hero{display:flex;align-items:center;gap:18px;padding:18px 0 12px;justify-content:space-between;flex-wrap:wrap}
+    .brand{display:flex;align-items:center;gap:14px}
+    .brand img{width:230px;height:auto}
+    h1{margin:4px 0 0 0;font-size:clamp(22px,3.2vw,28px)}
+    .subtitle{color:var(--muted);margin:6px 0 0 0}
+    .chips{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+    .chip{background:var(--chip);border:1px solid var(--border);padding:6px 10px;border-radius:999px;font-size:13px;color:#3a3f45}
+
+    /* Panel filtros */
+    .panel{
+      margin:20px 0;padding:18px;background:var(--card);
+      border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow)
+    }
+    .filters{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+    @media (max-width:900px){.filters{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:520px){.filters{grid-template-columns:1fr}}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    select,input[type="search"]{
+      width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:#fff;color:var(--fg)
+    }
+    input:focus,select:focus,button:focus{outline:3px solid var(--focus);outline-offset:2px}
+    .btn{border:1px solid var(--border);background:#fff;color:var(--fg);padding:10px 14px;border-radius:10px;cursor:pointer}
+    .btn:hover{background:#f7f7f8}
+    .btn.primary{border-color:transparent;background:var(--alcea-purple);color:#fff;font-weight:600}
+    .btn.primary:hover{background:var(--alcea-purple-600)}
+
+    /* Grilla de meses */
+    .grid{display:grid;gap:14px;grid-template-columns:repeat(12,1fr)}
+    .month{
+      grid-column:span 12;background:var(--card);
+      border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:var(--shadow)
+    }
+    .month h3{
+      margin:0;padding:14px 16px;background:var(--month-bg);color:#fff;
+      display:flex;align-items:center;justify-content:space-between;font-size:16px
+    }
+    .count{opacity:.9}
+    .events{display:grid;grid-template-columns:repeat(12,1fr);background:#fff}
+
+    /* Tarjeta de evento */
+    .event{
+      grid-column:span 6;border-bottom:1px dashed var(--border);
+      padding:12px 14px;display:flex;gap:12px;position:relative;background:#fff
+    }
+    .event::before{
+      content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--month-bg);border-radius:2px
+    }
+    @media (max-width:900px){.event{grid-column:span 12}}
+
+    /* Recuadro de fecha con imagen de fondo opcional */
+    .date{
+      position:relative;
+      min-width:90px; /* un poco más ancho para imagen */
+      text-align:center;
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:8px 10px;
+      background:#fff;
+      overflow:hidden;
+      background-size:cover;
+      background-position:center;
+      display:flex;align-items:center;justify-content:center;
+    }
+    .date .txt{position:relative;z-index:1}
+    .date .d{font-size:20px;font-weight:800;line-height:1}
+    .date .m{font-size:12px;color:var(--muted);margin-top:2px}
+
+    /* Si tiene imagen: oscurecemos y ponemos texto blanco para contraste */
+    .date.has-img .m,
+    .date.has-img .d{color:#fff}
+    .date.has-img::after{
+      content:"";position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,.25), rgba(0,0,0,.45));
+      z-index:0;
+    }
+
+    .content{flex:1}
+    .title{font-weight:700}
+    .meta{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0}
+    .badge{font-size:12px;background:#FAFAFA;border:1px solid var(--border);padding:4px 8px;border-radius:8px;color:#596072}
+    .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+    .actions a.btn{padding:8px 12px;border-radius:8px}
+
+    /* Temario (details) */
+    details.syllabus{
+      margin-top:8px;border:1px solid var(--border);border-radius:10px;background:#fff
+    }
+    details.syllabus summary{
+      cursor:pointer;padding:10px 12px;font-weight:600;color:#2E2E2E;list-style:none
+    }
+    details.syllabus[open] summary{border-bottom:1px solid var(--border)}
+    details.syllabus .body{padding:10px 16px}
+    details.syllabus ul{margin:0 0 0 18px}
+
+    .empty{color:#7A808A;padding:14px}
+    footer{color:#6a737d;padding:22px 16px;text-align:center;border-top:1px solid var(--border);margin-top:28px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div class="hero">
+        <div class="brand">
+          <!-- Logo (archivo provisto por ti, en la misma carpeta) -->
+          <img src="ALCEA_Dark_Logo_RGB.png.png" alt="ALCEA / ASSA ABLOY">
+          <div>
+            <h1>Cronograma de Capacitación 2026</h1>
+            <p class="subtitle">Calendario anual con filtros, búsqueda, exportación y temarios por evento.</p>
+            <div class="chips">
+              <span class="chip">UI blanca</span>
+              <span class="chip">Encabezado mensual #260E56</span>
+              <span class="chip">Zona horaria Bogotá (GMT‑5)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="panel" aria-label="Filtros del calendario">
+      <div class="filters">
+        <div>
+          <label for="mes">Mes</label>
+          <select id="mes" aria-label="Filtrar por mes">
+            <option value="todos">Todos</option>
+            <option value="0">Enero</option>
+            <option value="1">Febrero</option>
+            <option value="2">Marzo</option>
+            <option value="3">Abril</option>
+            <option value="4">Mayo</option>
+            <option value="5">Junio</option>
+            <option value="6">Julio</option>
+            <option value="7">Agosto</option>
+            <option value="8">Septiembre</option>
+            <option value="9">Octubre</option>
+            <option value="10">Noviembre</option>
+            <option value="11">Diciembre</option>
+          </select>
+        </div>
+        <div>
+          <label for="modalidad">Modalidad</label>
+          <select id="modalidad" aria-label="Filtrar por modalidad">
+            <option value="todas">Todas</option>
+            <option value="Presencial">Presencial</option>
+            <option value="Virtual">Virtual</option>
+            <option value="Híbrida">Híbrida</option>
+          </select>
+        </div>
+        <div>
+          <label for="busqueda">Búsqueda</label>
+          <input id="busqueda" type="search" placeholder="Tema, instructor, lugar..." aria-label="Búsqueda por texto">
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <input id="soloProximos" type="checkbox" />
+          <label for="soloProximos" style="margin:0">Solo próximos</label>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px">
+        <button class="btn" id="exportCSV">Exportar CSV</button>
+        <button class="btn" id="limpiar">Limpiar filtros</button>
+      </div>
+    </section>
+
+    <section id="contenedor" class="grid" aria-live="polite"></section>
+
+    <p class="empty" style="margin:6px 0 0 0">Tip: reemplaza los eventos de ejemplo por tu programación real 2026 en el arreglo <code>capacitaciones</code>.</p>
+  </main>
+
+  <footer>
+    © 2026 — ALCEA / ASSA ABLOY — Cronograma de capacitación.
+  </footer>
+
+  <script>
+    // =======================
+    // 1) Datos de ejemplo 2026 (con temario e imagen de referencia por evento)
+    //     - Cambia las URLs de "img" por las tuyas o quítalas si no quieres imagen.
+    // =======================
+    const capacitaciones = [
+      { fecha: "2026-02-05T09:00:00-05:00",
+        titulo: "Inducción de Seguridad y Accesos",
+        modalidad: "Presencial", duracionHoras: 3, instructor: "Laura Pérez",
+        lugar: "Auditorio Sede Norte", registro: "",
+        img: "https://picsum.photos/seed/security/240/240",   // ejemplo
+        temario: [
+          "Política de seguridad de ALCEA / ASSA ABLOY",
+          "Buenas prácticas en salas técnicas y sites remotos",
+          "Credenciales y niveles de acceso: altas, bajas y modificaciones",
+          "Protocolos de incidentes y reporte inmediato"
+        ]
+      },
+      { fecha: "2026-03-14T10:00:00-05:00",
+        titulo: "Gestión de incidencias y respuesta",
+        modalidad: "Virtual", duracionHoras: 2, instructor: "Carlos Ramírez",
+        lugar: "Teams", registro: "",
+        img: "https://picsum.photos/seed/incident/240/240",   // ejemplo
+        temario: [
+          "Clasificación de incidentes (prioridades y tipologías)",
+          "Flujo de atención: detección → escalamiento → cierre",
+          "KPI de respuesta (MTTA/MTTR) y tableros",
+          "Lecciones aprendidas y post-mortem"
+        ]
+      },
+      { fecha: "2026-05-09T14:00:00-05:00",
+        titulo: "Plataforma ALCEA: administración",
+        modalidad: "Híbrida", duracionHoras: 3, instructor: "María Gómez",
+        lugar: "Sala 2 + Teams", registro: "",
+        img: "https://picsum.photos/seed/platform/240/240",   // ejemplo
+        temario: [
+          "Altas/gestión de usuarios, roles y permisos",
+          "Configuración de sitios y controladores",
+          "Integraciones con VMS/IDS y exportes",
+          "Buenas prácticas de respaldo y auditoría"
+        ]
+      },
+      { fecha: "2026-09-19T11:00:00-05:00",
+        titulo: "Buenas prácticas en sites remotos",
+        modalidad: "Virtual", duracionHoras: 2, instructor: "Natalia Ríos",
+        lugar: "Teams", registro: "",
+        img: "https://picsum.photos/seed/remote/240/240",     // ejemplo
+        temario: [
+          "Checklist previo a intervención en campo",
+          "Seguridad física y EPP en terreno",
+          "Registro de visitas y custodia de llaves",
+          "Telemetría básica y verificación a distancia"
+        ]
+      }
+    ];
+
+    // =======================
+    // 2) Utilidades de formato
+    // =======================
+    const TZ = "America/Bogota";
+    const meses = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+    const pad2 = n => String(n).padStart(2,"0");
+    const fmtFecha = d => new Intl.DateTimeFormat("es-CO",{dateStyle:"full", timeStyle:"short", timeZone:TZ}).format(d);
+    const normalizar = s => (s||"").toString().toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu,"");
+
+    // =======================
+    // 3) Render
+    // =======================
+    const contenedor = document.getElementById("contenedor");
+    const ui = {
+      mes: document.getElementById("mes"),
+      modalidad: document.getElementById("modalidad"),
+      busqueda: document.getElementById("busqueda"),
+      soloProximos: document.getElementById("soloProximos"),
+      limpiar: document.getElementById("limpiar"),
+      exportCSV: document.getElementById("exportCSV")
+    };
+
+    function filtrar(lista){
+      const mesSel = ui.mes.value;
+      const modSel = ui.modalidad.value;
+      const q = normalizar(ui.busqueda.value);
+      const ahora = new Date();
+      return lista.filter(ev=>{
+        const d = new Date(ev.fecha);
+        const okMes = mesSel==="todos" || d.getMonth()===Number(mesSel);
+        const okMod = modSel==="todas" || ev.modalidad===modSel;
+        const okQ = !q || [ev.titulo, ev.instructor, ev.lugar, ...(ev.temario||[])].some(x=>normalizar(x).includes(q));
+        const okProx = !ui.soloProximos.checked || d>=ahora;
+        return okMes && okMod && okQ && okProx;
+      }).sort((a,b)=> new Date(a.fecha)-new Date(b.fecha));
+    }
+
+    function agruparPorMes(lista){
+      const g=new Map();
+      for(const ev of lista){
+        const d=new Date(ev.fecha);
+        const key=d.getFullYear()+"-"+pad2(d.getMonth()+1);
+        if(!g.has(key)) g.set(key,[]);
+        g.get(key).push(ev);
+      }
+      return [...g.entries()].sort((a,b)=>a[0].localeCompare(b[0]));
+    }
+
+    function render(){
+      const datos=filtrar(capacitaciones);
+      const grupos=agruparPorMes(datos);
+      contenedor.innerHTML="";
+      if(grupos.length===0){
+        contenedor.innerHTML=`<div class="month"><div class="empty">No hay eventos con los filtros aplicados.</div></div>`;
+        return;
+      }
+      for(const [key,evs] of grupos){
+        const [yy,mm]=key.split("-");
+        const bloque=document.createElement("article");
+        bloque.className="month";
+        bloque.innerHTML=`
+          <h3>
+            <span>${meses[Number(mm)-1]} ${yy}</span>
+            <span class="count">${evs.length} evento(s)</span>
+          </h3>
+          <div class="events"></div>
+        `;
+        const zona=bloque.querySelector(".events");
+        for(const ev of evs) zona.appendChild(renderEvento(ev));
+        contenedor.appendChild(bloque);
+      }
+    }
+
+    function renderEvento(ev){
+      const d=new Date(ev.fecha);
+      const el=document.createElement("div");
+      el.className="event";
+      const dia=d.getDate();
+      const mesCorto=meses[d.getMonth()].slice(0,3);
+
+      const registroBtn = ev.registro
+        ? `<a class="btn" href="${ev.registro}" target="_blank" rel="noopener">Inscribirme</a>`
+        : "";
+
+      const temarioHTML = (ev.temario && ev.temario.length)
+        ? `<details class="syllabus"><summary>Temario</summary>
+             <div class="body">
+               <ul>${ev.temario.map(t => `<li>${t}</li>`).join("")}</ul>
+             </div>
+           </details>`
+        : "";
+
+      el.innerHTML=`
+        <div class="date">
+          <div class="txt">
+            <div class="d">${dia}</div>
+            <div class="m">${mesCorto}</div>
+          </div>
+        </div>
+        <div class="content">
+          <div class="title">${ev.titulo}</div>
+          <div class="meta">
+            <span class="badge">${fmtFecha(d)}</span>
+            <span class="badge">Modalidad: ${ev.modalidad}</span>
+            <span class="badge">Duración: ${ev.duracionHoras} h</span>
+            <span class="badge">Instructor(a): ${ev.instructor}</span>
+            ${ev.lugar ? `<span class="badge">Lugar: ${ev.lugar}</span>` : ""}
+          </div>
+          ${temarioHTML}
+          <div class="actions">${registroBtn}</div>
+        </div>
+      `;
+
+      // Si hay imagen, la aplicamos como fondo del recuadro de fecha
+      const dateBox = el.querySelector(".date");
+      if (ev.img){
+        dateBox.classList.add("has-img");
+        dateBox.style.backgroundImage = `url('${ev.img}')`;
+      }
+      return el;
+    }
+
+    // Export CSV
+    ui.exportCSV.addEventListener("click", ()=>{
+      const vis=filtrar(capacitaciones);
+      const filas=[["Fecha","Título","Modalidad","Duración (h)","Instructor(a)","Lugar","Registro","Temario","Imagen"]];
+      for(const ev of vis){
+        const d=new Date(ev.fecha);
+        const temarioPlano=(ev.temario||[]).join(" | ");
+        filas.push([fmtFecha(d),ev.titulo,ev.modalidad,ev.duracionHoras,ev.instructor,ev.lugar||"",ev.registro||"",temarioPlano,ev.img||""]);
+      }
+      const csv=filas.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(",")).join("\r\n");
+      const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement("a"); a.href=url; a.download="cronograma_2026.csv"; a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // Listeners y reset
+    ["change","input"].forEach(evt=>{
+      ui.mes.addEventListener(evt,render);
+      ui.modalidad.addEventListener(evt,render);
+      ui.busqueda.addEventListener(evt,render);
+      ui.soloProximos.addEventListener(evt,render);
+    });
+    ui.limpiar.addEventListener("click",()=>{
+      ui.mes.value="todos"; ui.modalidad.value="todas";
+      ui.busqueda.value=""; ui.soloProximos.checked=false; render();
+    });
+
+    render();
+  </script>
+</body>
+</html>
