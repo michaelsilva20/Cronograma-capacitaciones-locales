@@ -45,10 +45,10 @@
     <div class="wrap">
       <div class="hero">
         <div class="brand">
-          ALCEA_Dark_Logo_RGB.png.png
+          <img src="ALCEA_Dark_Logo_RGB.png.png" alt="ALCEA / ASSA ABLOY">
           <h1>Inscripción a capacitación</h1>
         </div>
-        index.html← Volver al cronograma</a>
+        <a class="link" href="index.html">← Volver al cronograma</a>
       </div>
     </div>
   </header>
@@ -108,28 +108,25 @@
     © 2026 — ALCEA / ASSA ABLOY — Inscripciones.
   </footer>
 
-  <!-- EmailJS v4 (cliente, sin backend) -->
-  https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js</script>
+  <!-- EmailJS v4 -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script>
     // 1) Carga de datos del evento desde la URL
     const params = new URLSearchParams(location.search);
     const eventoUrl = params.get('evento') || 'Capacitación';
     const fechaIso = params.get('fecha') || null;
-
     const fechaFmt = fechaIso
       ? new Intl.DateTimeFormat("es-CO", { dateStyle: "full", timeStyle: "short", timeZone: "America/Bogota" }).format(new Date(fechaIso))
       : "—";
-
     document.getElementById('evtNombre').textContent = "Evento: " + eventoUrl;
     document.getElementById('evtFecha').textContent = "Fecha: " + fechaFmt;
     document.getElementById('evento').value = eventoUrl;
     document.getElementById('fecha').value = fechaFmt;
 
-    // 2) Configura tus credenciales de EmailJS (reemplaza estas constantes)
+    // 2) Configura EmailJS (reemplaza estas constantes)
     const EMAILJS_PUBLIC_KEY = "YOUR_PUBLIC_KEY";
     const EMAILJS_SERVICE_ID = "YOUR_SERVICE_ID";
     const EMAILJS_TEMPLATE_ID = "YOUR_TEMPLATE_ID";
-
     emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
 
     // 3) Envío del formulario
@@ -146,7 +143,7 @@
       e.preventDefault();
       setStatus('');
 
-      // Honeypot: si tiene algo, abortar silenciosamente
+      // Honeypot
       if (document.getElementById('_hp').value) return;
 
       // Validaciones
@@ -154,7 +151,6 @@
       const email   = form.email.value.trim();
       const empresa = form.empresa.value.trim();
       const cargo   = form.cargo.value.trim();
-
       if(!nombre || !email || !empresa || !cargo){
         setStatus('Por favor completa todos los campos obligatorios.', 'error');
         return;
@@ -165,25 +161,21 @@
       }
 
       btn.disabled = true; btn.textContent = "Enviando…";
-
       try{
         const templateParams = {
-          // variables disponibles en la plantilla de EmailJS:
           evento: document.getElementById('evento').value,
           fecha:  document.getElementById('fecha').value,
           nombre, empresa, cargo,
-          email,           // del participante
-          to_email: email  // destinatario de la confirmación
-          // admin_email: "formacion@tuempresa.com"  // opcional, si lo usas en la plantilla
+          email,           // de la persona
+          to_email: email  // destinatario de confirmación
+          // admin_email: "formacion@tuempresa.com" // opcional si tu plantilla lo contempla
         };
-
         await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
-
         setStatus('¡Inscripción enviada! Revisa tu correo para confirmar.', 'ok');
         form.reset();
       }catch(err){
         console.error(err);
-        setStatus('No se pudo enviar la inscripción. Intenta nuevamente más tarde.', 'error');
+        setStatus('No se pudo enviar la inscripción. Intenta más tarde.', 'error');
       }finally{
         btn.disabled = false; btn.textContent = "Enviar inscripción";
       }
@@ -191,4 +183,3 @@
   </script>
 </body>
 </html>
-``
