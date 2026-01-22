@@ -3,11 +3,11 @@
   "eventos": [
     {
       "fecha": "2026-02-05T09:00:00-05:00",
-      "titulo": "Inducción de Seguridad y Accesos",
-      "modalidad": "Presencial",
+      "titulo": "Control de acceso NO CONVENSIONAL - CLIQ",
+      "modalidad": "Virtual",
       "duracionHoras": 3,
-      "instructor": "Laura Pérez",
-      "lugar": "Auditorio Sede Norte",
+      "instructor": "David juvinado"
+      "lugar": "Teams Webinar",
       "registro": "",
       "img": "https://picsum.photos/seed/security/240/240",
       "temario": [
