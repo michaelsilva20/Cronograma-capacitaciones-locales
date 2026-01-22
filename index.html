@@ -1,5 +1,4 @@
 
-
 <!doctype html>
 <html lang="es">
 <head>
@@ -12,7 +11,12 @@
     :root{
       --alcea-purple: #6A1B9A;
       --alcea-purple-600: #7B1FA2;
-      --month-bg: #260E56;           /* Encabezado de cada mes */
+
+      /* Colores pedidos */
+      --month-title-bg: #3D1082; /* fondo de títulos: Mes & Año */
+      --cta-bg: #260E56;         /* CTA “Inscríbete aquí” */
+      --cta-bg-hover: #32206A;   /* hover del CTA */
+
       --bg: #FFFFFF; --fg: #1B1B1B; --muted: #5F6B7A;
       --card: #FFFFFF; --border: #E6E8EC; --chip: #F4F5F7;
       --focus: #1A73E8; --shadow: 0 4px 12px rgba(0,0,0,0.06);
@@ -50,13 +54,16 @@
     /* Grilla de meses */
     .grid{display:grid;gap:14px;grid-template-columns:repeat(12,1fr)}
     .month{grid-column:span 12;background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
-    .month h3{margin:0;padding:14px 16px;background:var(--month-bg);color:#fff;display:flex;align-items:center;justify-content:space-between;font-size:16px}
+    .month h3{
+      margin:0;padding:14px 16px;background:var(--month-title-bg);color:#fff;
+      display:flex;align-items:center;justify-content:space-between;font-size:16px
+    }
     .count{opacity:.9}
     .events{display:grid;grid-template-columns:repeat(12,1fr);background:#fff}
 
     /* Tarjeta de evento */
     .event{grid-column:span 6;border-bottom:1px dashed var(--border);padding:12px 14px;display:flex;gap:12px;position:relative;background:#fff}
-    .event::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--month-bg);border-radius:2px}
+    .event::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--month-title-bg);border-radius:2px}
     @media (max-width:900px){.event{grid-column:span 12}}
 
     /* Recuadro de fecha con imagen de fondo opcional */
@@ -71,15 +78,18 @@
     .title{font-weight:700}
     .meta{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0}
     .badge{font-size:12px;background:#FAFAFA;border:1px solid var(--border);padding:4px 8px;border-radius:8px;color:#596072}
-    .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
-    .actions a.btn{padding:8px 12px;border-radius:8px}
 
-    /* Temario (details) */
-    details.syllabus{margin-top:8px;border:1px solid var(--border);border-radius:10px;background:#fff}
-    details.syllabus summary{cursor:pointer;padding:10px 12px;font-weight:600;color:#2E2E2E;list-style:none}
-    details.syllabus[open] summary{border-bottom:1px solid var(--border)}
-    details.syllabus .body{padding:10px 16px}
-    details.syllabus ul{margin:0 0 0 18px}
+    .actions{
+      display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;
+      justify-content:flex-end; /* a la derecha */
+      align-items:center;       /* centrado vertical */
+    }
+    .actions a.btn.cta{
+      background: var(--cta-bg);   /* #260E56 */
+      color:#fff;border:none;font-weight:600;
+      padding:10px 14px;border-radius:10px;text-decoration:none
+    }
+    .actions a.btn.cta:hover{ background: var(--cta-bg-hover); }
 
     .empty{color:#7A808A;padding:14px}
     footer{color:#6a737d;padding:22px 16px;text-align:center;border-top:1px solid var(--border);margin-top:28px}
@@ -90,13 +100,13 @@
     <div class="wrap">
       <div class="hero">
         <div class="brand">
-          <img src="ALCEA_Dark_Logo_RGB.png" alt="ALCEA / ASSA ABLOY">
+          <img src="ALCEA_Dark_Logo_RGB.png.png" alt="ALCEA / ASSA ABLOY logo">
           <div>
             <h1>Cronograma de Capacitación 2026</h1>
             <p class="subtitle">Calendario anual con filtros, búsqueda, temarios y formulario de inscripción.</p>
             <div class="chips">
               <span class="chip">UI blanca</span>
-              <span class="chip">Encabezado mensual #260E56</span>
+              <span class="chip">Encabezado mensual #3D1082</span>
               <span class="chip">Zona horaria Bogotá (GMT‑5)</span>
             </div>
           </div>
@@ -284,7 +294,7 @@
           </div>
           ${temarioHTML}
           <div class="actions">
-            <a class="btn primary" href="${urlForm}">Inscríbete aquí</a>
+            <a href="${urlForm}" class="btn cta" target="_blank" rel="noopener">Inscríbete aquí</a>
           </div>
         </div>
       `;
