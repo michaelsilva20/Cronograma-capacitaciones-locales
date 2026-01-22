@@ -1,26 +1,21 @@
 
+
 <!doctype html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Cronograma de Capacitación 2026 — ALCEA / ASSA ABLOY</title>
-  <meta name="description" content="Cronograma de capacitación 2026 de ALCEA / ASSA ABLOY con filtros, temarios por evento y exportación a CSV." />
+  <meta name="description" content="Cronograma de capacitación 2026 de ALCEA / ASSA ABLOY con filtros, temarios, exportación a CSV y formulario de inscripción." />
   <meta name="color-scheme" content="light only">
   <style>
     :root{
       --alcea-purple: #6A1B9A;
       --alcea-purple-600: #7B1FA2;
-      --assa-black: #000000;
-      --month-bg: #260E56;           /* Color de encabezado mensual */
-      --bg: #FFFFFF;
-      --fg: #1B1B1B;
-      --muted: #5F6B7A;
-      --card: #FFFFFF;
-      --border: #E6E8EC;
-      --chip: #F4F5F7;
-      --focus: #1A73E8;
-      --shadow: 0 4px 12px rgba(0,0,0,0.06);
+      --month-bg: #260E56;           /* Encabezado de cada mes */
+      --bg: #FFFFFF; --fg: #1B1B1B; --muted: #5F6B7A;
+      --card: #FFFFFF; --border: #E6E8EC; --chip: #F4F5F7;
+      --focus: #1A73E8; --shadow: 0 4px 12px rgba(0,0,0,0.06);
     }
 
     *{box-sizing:border-box}
@@ -40,17 +35,12 @@
     .chip{background:var(--chip);border:1px solid var(--border);padding:6px 10px;border-radius:999px;font-size:13px;color:#3a3f45}
 
     /* Panel filtros */
-    .panel{
-      margin:20px 0;padding:18px;background:var(--card);
-      border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow)
-    }
+    .panel{margin:20px 0;padding:18px;background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow)}
     .filters{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
     @media (max-width:900px){.filters{grid-template-columns:repeat(2,1fr)}}
     @media (max-width:520px){.filters{grid-template-columns:1fr}}
     label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
-    select,input[type="search"]{
-      width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:#fff;color:var(--fg)
-    }
+    select,input[type="search"]{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:#fff;color:var(--fg)}
     input:focus,select:focus,button:focus{outline:3px solid var(--focus);outline-offset:2px}
     .btn{border:1px solid var(--border);background:#fff;color:var(--fg);padding:10px 14px;border-radius:10px;cursor:pointer}
     .btn:hover{background:#f7f7f8}
@@ -59,52 +49,23 @@
 
     /* Grilla de meses */
     .grid{display:grid;gap:14px;grid-template-columns:repeat(12,1fr)}
-    .month{
-      grid-column:span 12;background:var(--card);
-      border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:var(--shadow)
-    }
-    .month h3{
-      margin:0;padding:14px 16px;background:var(--month-bg);color:#fff;
-      display:flex;align-items:center;justify-content:space-between;font-size:16px
-    }
+    .month{grid-column:span 12;background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+    .month h3{margin:0;padding:14px 16px;background:var(--month-bg);color:#fff;display:flex;align-items:center;justify-content:space-between;font-size:16px}
     .count{opacity:.9}
     .events{display:grid;grid-template-columns:repeat(12,1fr);background:#fff}
 
     /* Tarjeta de evento */
-    .event{
-      grid-column:span 6;border-bottom:1px dashed var(--border);
-      padding:12px 14px;display:flex;gap:12px;position:relative;background:#fff
-    }
-    .event::before{
-      content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--month-bg);border-radius:2px
-    }
+    .event{grid-column:span 6;border-bottom:1px dashed var(--border);padding:12px 14px;display:flex;gap:12px;position:relative;background:#fff}
+    .event::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--month-bg);border-radius:2px}
     @media (max-width:900px){.event{grid-column:span 12}}
 
     /* Recuadro de fecha con imagen de fondo opcional */
-    .date{
-      position:relative;
-      min-width:90px; /* un poco más ancho para imagen */
-      text-align:center;
-      border:1px solid var(--border);
-      border-radius:12px;
-      padding:8px 10px;
-      background:#fff;
-      overflow:hidden;
-      background-size:cover;
-      background-position:center;
-      display:flex;align-items:center;justify-content:center;
-    }
+    .date{position:relative;min-width:90px;text-align:center;border:1px solid var(--border);border-radius:12px;padding:8px 10px;background:#fff;overflow:hidden;background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center}
     .date .txt{position:relative;z-index:1}
     .date .d{font-size:20px;font-weight:800;line-height:1}
     .date .m{font-size:12px;color:var(--muted);margin-top:2px}
-
-    /* Si tiene imagen: oscurecemos y ponemos texto blanco para contraste */
-    .date.has-img .m,
-    .date.has-img .d{color:#fff}
-    .date.has-img::after{
-      content:"";position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,.25), rgba(0,0,0,.45));
-      z-index:0;
-    }
+    .date.has-img .m,.date.has-img .d{color:#fff}
+    .date.has-img::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,.25), rgba(0,0,0,.45));z-index:0}
 
     .content{flex:1}
     .title{font-weight:700}
@@ -114,12 +75,8 @@
     .actions a.btn{padding:8px 12px;border-radius:8px}
 
     /* Temario (details) */
-    details.syllabus{
-      margin-top:8px;border:1px solid var(--border);border-radius:10px;background:#fff
-    }
-    details.syllabus summary{
-      cursor:pointer;padding:10px 12px;font-weight:600;color:#2E2E2E;list-style:none
-    }
+    details.syllabus{margin-top:8px;border:1px solid var(--border);border-radius:10px;background:#fff}
+    details.syllabus summary{cursor:pointer;padding:10px 12px;font-weight:600;color:#2E2E2E;list-style:none}
     details.syllabus[open] summary{border-bottom:1px solid var(--border)}
     details.syllabus .body{padding:10px 16px}
     details.syllabus ul{margin:0 0 0 18px}
@@ -133,11 +90,10 @@
     <div class="wrap">
       <div class="hero">
         <div class="brand">
-          <!-- Logo (archivo provisto por ti, en la misma carpeta) -->
-          <img src="ALCEA_Dark_Logo_RGB.png" alt="ALCEA - ASSA ABLOY">
+          <img src="ALCEA_Dark_Logo_RGB.png.png" alt="ALCEA / ASSA ABLOY">
           <div>
             <h1>Cronograma de Capacitación 2026</h1>
-            <p class="subtitle">Calendario anual con filtros, búsqueda, exportación y temarios por evento.</p>
+            <p class="subtitle">Calendario anual con filtros, búsqueda, temarios y formulario de inscripción.</p>
             <div class="chips">
               <span class="chip">UI blanca</span>
               <span class="chip">Encabezado mensual #260E56</span>
@@ -156,18 +112,10 @@
           <label for="mes">Mes</label>
           <select id="mes" aria-label="Filtrar por mes">
             <option value="todos">Todos</option>
-            <option value="0">Enero</option>
-            <option value="1">Febrero</option>
-            <option value="2">Marzo</option>
-            <option value="3">Abril</option>
-            <option value="4">Mayo</option>
-            <option value="5">Junio</option>
-            <option value="6">Julio</option>
-            <option value="7">Agosto</option>
-            <option value="8">Septiembre</option>
-            <option value="9">Octubre</option>
-            <option value="10">Noviembre</option>
-            <option value="11">Diciembre</option>
+            <option value="0">Enero</option><option value="1">Febrero</option><option value="2">Marzo</option>
+            <option value="3">Abril</option><option value="4">Mayo</option><option value="5">Junio</option>
+            <option value="6">Julio</option><option value="7">Agosto</option><option value="8">Septiembre</option>
+            <option value="9">Octubre</option><option value="10">Noviembre</option><option value="11">Diciembre</option>
           </select>
         </div>
         <div>
@@ -197,185 +145,182 @@
 
     <section id="contenedor" class="grid" aria-live="polite"></section>
 
-    <p class="empty" style="margin:6px 0 0 0">Tip: reemplaza los eventos de ejemplo por tu programación real 2026 en el arreglo <code>capacitaciones</code>.</p>
+    <p class="empty" style="margin:6px 0 0 0">Tip: edita solo <code>capacitaciones.json</code> para actualizar el calendario.</p>
   </main>
 
   <footer>
     © 2026 — ALCEA / ASSA ABLOY — Cronograma de capacitación.
   </footer>
 
- 
-<script>
-  // === Config ===
-  const RUTA_JSON = "capacitaciones.json"; // si lo pones en otra carpeta, ajusta la ruta
+  <script>
+    // === Config ===
+    const RUTA_JSON = "capacitaciones.json";
 
-  // === Utilidades de formato y UI ===
-  const TZ = "America/Bogota";
-  const mesesLargos = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
-  const mesesCortos = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
-  const pad2 = n => String(n).padStart(2,"0");
-  const fmtFecha = d => new Intl.DateTimeFormat("es-CO",{dateStyle:"full", timeStyle:"short", timeZone:TZ}).format(d);
-  const normalizar = s => (s||"").toString().toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu,"");
+    // === Utilidades ===
+    const TZ = "America/Bogota";
+    const mesesLargos = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+    const mesesCortos = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+    const pad2 = n => String(n).padStart(2,"0");
+    const fmtFecha = d => new Intl.DateTimeFormat("es-CO",{dateStyle:"full", timeStyle:"short", timeZone:TZ}).format(d);
+    const normalizar = s => (s||"").toString().toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu,"");
 
-  // === Elementos ===
-  const contenedor = document.getElementById("contenedor");
-  const ui = {
-    mes: document.getElementById("mes"),
-    modalidad: document.getElementById("modalidad"),
-    busqueda: document.getElementById("busqueda"),
-    soloProximos: document.getElementById("soloProximos"),
-    limpiar: document.getElementById("limpiar"),
-    exportCSV: document.getElementById("exportCSV")
-  };
+    // === Elementos ===
+    const contenedor = document.getElementById("contenedor");
+    const ui = {
+      mes: document.getElementById("mes"),
+      modalidad: document.getElementById("modalidad"),
+      busqueda: document.getElementById("busqueda"),
+      soloProximos: document.getElementById("soloProximos"),
+      limpiar: document.getElementById("limpiar"),
+      exportCSV: document.getElementById("exportCSV")
+    };
 
-  // === Estado ===
-  let CAPACITACIONES = []; // se llenará desde capacitaciones.json
+    // === Estado global ===
+    let CAPACITACIONES = [];
 
-  // === Carga de datos ===
-  async function cargarDatos(){
-    try{
-      const res = await fetch(RUTA_JSON, { cache: "no-store" });
-      if(!res.ok) throw new Error("No se pudo leer " + RUTA_JSON);
-      const data = await res.json();
-      if(!Array.isArray(data.eventos)) throw new Error("El JSON no contiene 'eventos' como arreglo.");
-      CAPACITACIONES = data.eventos.map(e=>({ ...e })); // shallow copy
-      render();
-    }catch(err){
-      console.error(err);
-      contenedor.innerHTML = `<div class="month"><div class="empty">No pude cargar los datos. Verifica <code>${RUTA_JSON}</code>.</div></div>`;
+    // === Carga de datos ===
+    async function cargarDatos(){
+      try{
+        const res = await fetch(RUTA_JSON, { cache: "no-store" });
+        if(!res.ok) throw new Error("No se pudo leer " + RUTA_JSON);
+        const data = await res.json();
+        if(!Array.isArray(data.eventos)) throw new Error("El JSON no contiene 'eventos' como arreglo.");
+        CAPACITACIONES = data.eventos.map(e=>({ ...e }));
+        render();
+      }catch(err){
+        console.error(err);
+        contenedor.innerHTML = `<div class="month"><div class="empty">No pude cargar los datos. Verifica <code>${RUTA_JSON}</code>.</div></div>`;
+      }
     }
-  }
 
-  // === Filtros y agrupación ===
-  function filtrar(lista){
-    const mesSel = ui.mes.value;
-    const modSel = ui.modalidad.value;
-    const q = normalizar(ui.busqueda.value);
-    const ahora = new Date();
+    // === Filtros y agrupación ===
+    function filtrar(lista){
+      const mesSel = ui.mes.value;
+      const modSel = ui.modalidad.value;
+      const q = normalizar(ui.busqueda.value);
+      const ahora = new Date();
 
-    return lista.filter(ev=>{
-      const d = new Date(ev.fecha);
-      const okMes = mesSel==="todos" || d.getMonth()===Number(mesSel);
-      const okMod = modSel==="todas" || ev.modalidad===modSel;
-      const corpus = [ev.titulo, ev.instructor, ev.lugar, ...(ev.temario||[])].join(" ");
-      const okQ = !q || normalizar(corpus).includes(q);
-      const okProx = !ui.soloProximos.checked || d>=ahora;
-      return okMes && okMod && okQ && okProx;
-    }).sort((a,b)=> new Date(a.fecha)-new Date(b.fecha));
-  }
+      return lista.filter(ev=>{
+        const d = new Date(ev.fecha);
+        const okMes = mesSel==="todos" || d.getMonth()===Number(mesSel);
+        const okMod = modSel==="todas" || ev.modalidad===modSel;
+        const corpus = [ev.titulo, ev.instructor, ev.lugar, ...(ev.temario||[])].join(" ");
+        const okQ = !q || normalizar(corpus).includes(q);
+        const okProx = !ui.soloProximos.checked || d>=ahora;
+        return okMes && okMod && okQ && okProx;
+      }).sort((a,b)=> new Date(a.fecha)-new Date(b.fecha));
+    }
 
-  function agruparPorMes(lista){
-    const g=new Map();
-    for(const ev of lista){
+    function agruparPorMes(lista){
+      const g=new Map();
+      for(const ev of lista){
+        const d=new Date(ev.fecha);
+        const key=d.getFullYear()+"-"+pad2(d.getMonth()+1);
+        if(!g.has(key)) g.set(key,[]);
+        g.get(key).push(ev);
+      }
+      return [...g.entries()].sort((a,b)=>a[0].localeCompare(b[0]));
+    }
+
+    // === Render ===
+    function render(){
+      const datos=filtrar(CAPACITACIONES);
+      const grupos=agruparPorMes(datos);
+      contenedor.innerHTML="";
+      if(grupos.length===0){
+        contenedor.innerHTML=`<div class="month"><div class="empty">No hay eventos con los filtros aplicados.</div></div>`;
+        return;
+      }
+      for(const [key,evs] of grupos){
+        const [yy,mm]=key.split("-");
+        const bloque=document.createElement("article");
+        bloque.className="month";
+        bloque.innerHTML=`
+          <h3>
+            <span>${mesesLargos[Number(mm)-1]} ${yy}</span>
+            <span class="count">${evs.length} evento(s)</span>
+          </h3>
+          <div class="events"></div>
+        `;
+        const zona=bloque.querySelector(".events");
+        evs.forEach(ev=> zona.appendChild(renderEvento(ev)));
+        contenedor.appendChild(bloque);
+      }
+    }
+
+    function renderEvento(ev){
       const d=new Date(ev.fecha);
-      const key=d.getFullYear()+"-"+pad2(d.getMonth()+1);
-      if(!g.has(key)) g.set(key,[]);
-      g.get(key).push(ev);
-    }
-    return [...g.entries()].sort((a,b)=>a[0].localeCompare(b[0]));
-  }
+      const el=document.createElement("div");
+      el.className="event";
+      const dia=d.getDate();
+      const mesCorto=mesesCortos[d.getMonth()];
 
-  // === Render ===
-  function render(){
-    const datos=filtrar(CAPACITACIONES);
-    const grupos=agruparPorMes(datos);
-    contenedor.innerHTML="";
-    if(grupos.length===0){
-      contenedor.innerHTML=`<div class="month"><div class="empty">No hay eventos con los filtros aplicados.</div></div>`;
-      return;
-    }
-    for(const [key,evs] of grupos){
-      const [yy,mm]=key.split("-");
-      const bloque=document.createElement("article");
-      bloque.className="month";
-      bloque.innerHTML=`
-        <h3>
-          <span>${mesesLargos[Number(mm)-1]} ${yy}</span>
-          <span class="count">${evs.length} evento(s)</span>
-        </h3>
-        <div class="events"></div>
+      const params = new URLSearchParams({ evento: ev.titulo, fecha: d.toISOString() });
+      const urlForm = `inscripcion.html?${params.toString()}`;
+
+      const temarioHTML = (ev.temario && ev.temario.length)
+        ? `<details class="syllabus"><summary>Temario</summary>
+             <div class="body">
+               <ul>${ev.temario.map(t => `<li>${t}</li>`).join("")}</ul>
+             </div>
+           </details>`
+        : "";
+
+      el.innerHTML=`
+        <div class="date${ev.img ? " has-img" : ""}" ${ev.img ? `style="background-image:url('${ev.img}')"`: ""}>
+          <div class="txt">
+            <div class="d">${dia}</div>
+            <div class="m">${mesCorto}</div>
+          </div>
+        </div>
+        <div class="content">
+          <div class="title">${ev.titulo}</div>
+          <div class="meta">
+            <span class="badge">${fmtFecha(d)}</span>
+            <span class="badge">Modalidad: ${ev.modalidad}</span>
+            <span class="badge">Duración: ${ev.duracionHoras} h</span>
+            <span class="badge">Instructor(a): ${ev.instructor}</span>
+            ${ev.lugar ? `<span class="badge">Lugar: ${ev.lugar}</span>` : ""}
+          </div>
+          ${temarioHTML}
+          <div class="actions">
+            <a class="btn primary" href="${urlForm}">Inscríbete aquí</a>
+          </div>
+        </div>
       `;
-      const zona=bloque.querySelector(".events");
-      evs.forEach(ev=> zona.appendChild(renderEvento(ev)));
-      contenedor.appendChild(bloque);
+      return el;
     }
-  }
 
-  function renderEvento(ev){
-    const d=new Date(ev.fecha);
-    const el=document.createElement("div");
-    el.className="event";
-    const dia=d.getDate();
-    const mesCorto=mesesCortos[d.getMonth()];
+    // === Export CSV (sobre el estado filtrado actual) ===
+    ui.exportCSV.addEventListener("click", ()=>{
+      const vis = filtrar(CAPACITACIONES);
+      const filas = [["Fecha","Título","Modalidad","Duración (h)","Instructor(a)","Lugar","Registro","Temario","Imagen"]];
+      for(const ev of vis){
+        const d=new Date(ev.fecha);
+        const temarioPlano=(ev.temario||[]).join(" | ");
+        filas.push([fmtFecha(d), ev.titulo, ev.modalidad, ev.duracionHoras, ev.instructor, ev.lugar||"", ev.registro||"", temarioPlano, ev.img||""]);
+      }
+      const csv = filas.map(r=> r.map(x=> `"${String(x).replace(/"/g,'""')}"`).join(",")).join("\r\n");
+      const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a"); a.href = url; a.download = "cronograma_2026.csv"; a.click();
+      URL.revokeObjectURL(url);
+    });
 
-    // URL del formulario con datos del evento
-    const params = new URLSearchParams({ evento: ev.titulo, fecha: d.toISOString() });
-    const urlForm = `inscripcion.html?${params.toString()}`;
+    // === Listeners y reset ===
+    ["change","input"].forEach(evt=>{
+      ui.mes.addEventListener(evt, render);
+      ui.modalidad.addEventListener(evt, render);
+      ui.busqueda.addEventListener(evt, render);
+      ui.soloProximos.addEventListener(evt, render);
+    });
+    ui.limpiar.addEventListener("click", ()=>{
+      ui.mes.value="todos"; ui.modalidad.value="todas";
+      ui.busqueda.value=""; ui.soloProximos.checked=false; render();
+    });
 
-    const temarioHTML = (ev.temario && ev.temario.length)
-      ? `<details class="syllabus"><summary>Temario</summary>
-           <div class="body">
-             <ul>${ev.temario.map(t => `<li>${t}</li>`).join("")}</ul>
-           </div>
-         </details>`
-      : "";
-
-    el.innerHTML=`
-      <div class="date${ev.img ? " has-img" : ""}" ${ev.img ? `style="background-image:url('${ev.img}')"`: ""}>
-        <div class="txt">
-          <div class="d">${dia}</div>
-          <div class="m">${mesCorto}</div>
-        </div>
-      </div>
-      <div class="content">
-        <div class="title">${ev.titulo}</div>
-        <div class="meta">
-          <span class="badge">${fmtFecha(d)}</span>
-          <span class="badge">Modalidad: ${ev.modalidad}</span>
-          <span class="badge">Duración: ${ev.duracionHoras} h</span>
-          <span class="badge">Instructor(a): ${ev.instructor}</span>
-          ${ev.lugar ? `<span class="badge">Lugar: ${ev.lugar}</span>` : ""}
-        </div>
-        ${temarioHTML}
-        <div class="actions">
-          ${urlForm}Inscríbete aquí</a>
-        </div>
-      </div>
-    `;
-    return el;
-  }
-
-  // === Export CSV (sobre el estado actual filtrado) ===
-  ui.exportCSV.addEventListener("click", ()=>{
-    const vis = filtrar(CAPACITACIONES);
-    const filas = [["Fecha","Título","Modalidad","Duración (h)","Instructor(a)","Lugar","Registro","Temario","Imagen"]];
-    for(const ev of vis){
-      const d=new Date(ev.fecha);
-      const temarioPlano=(ev.temario||[]).join(" | ");
-      filas.push([fmtFecha(d), ev.titulo, ev.modalidad, ev.duracionHoras, ev.instructor, ev.lugar||"", ev.registro||"", temarioPlano, ev.img||""]);
-    }
-    const csv = filas.map(r=> r.map(x=> `"${String(x).replace(/"/g,'""')}"`).join(",")).join("\r\n");
-    const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a"); a.href = url; a.download = "cronograma_2026.csv"; a.click();
-    URL.revokeObjectURL(url);
-  });
-
-  // === Listeners y reset ===
-  ["change","input"].forEach(evt=>{
-    ui.mes.addEventListener(evt, render);
-    ui.modalidad.addEventListener(evt, render);
-    ui.busqueda.addEventListener(evt, render);
-    ui.soloProximos.addEventListener(evt, render);
-  });
-  ui.limpiar.addEventListener("click", ()=>{
-    ui.mes.value="todos"; ui.modalidad.value="todas";
-    ui.busqueda.value=""; ui.soloProximos.checked=false; render();
-  });
-
-  // === Inicio ===
-  cargarDatos();
-</script>
-
+    // Inicio
+    cargarDatos();
+  </script>
 </body>
 </html>
