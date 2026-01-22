@@ -1,0 +1,69 @@
+
+{
+  "eventos": [
+    {
+      "fecha": "2026-02-05T09:00:00-05:00",
+      "titulo": "Inducción de Seguridad y Accesos",
+      "modalidad": "Presencial",
+      "duracionHoras": 3,
+      "instructor": "Laura Pérez",
+      "lugar": "Auditorio Sede Norte",
+      "registro": "",
+      "img": "https://picsum.photos/seed/security/240/240",
+      "temario": [
+        "Política de seguridad de ALCEA / ASSA ABLOY",
+        "Buenas prácticas en salas técnicas y sites remotos",
+        "Credenciales y niveles de acceso",
+        "Protocolos de incidentes y reporte inmediato"
+      ]
+    },
+    {
+      "fecha": "2026-03-14T10:00:00-05:00",
+      "titulo": "Gestión de incidencias y respuesta",
+      "modalidad": "Virtual",
+      "duracionHoras": 2,
+      "instructor": "Carlos Ramírez",
+      "lugar": "Teams",
+      "registro": "",
+      "img": "https://picsum.photos/seed/incident/240/240",
+      "temario": [
+        "Clasificación de incidentes (prioridades y tipologías)",
+        "Flujo de atención: detección → escalamiento → cierre",
+        "KPIs MTTA/MTTR y tableros",
+        "Lecciones aprendidas y post‑mortem"
+      ]
+    },
+    {
+      "fecha": "2026-05-09T14:00:00-05:00",
+      "titulo": "Plataforma ALCEA: administración",
+      "modalidad": "Híbrida",
+      "duracionHoras": 3,
+      "instructor": "María Gómez",
+      "lugar": "Sala 2 + Teams",
+      "registro": "",
+      "img": "https://picsum.photos/seed/platform/240/240",
+      "temario": [
+        "Altas/gestión de usuarios, roles y permisos",
+        "Configuración de sitios y controladores",
+        "Integraciones con VMS/IDS",
+        "Buenas prácticas de respaldo y auditoría"
+      ]
+    },
+    {
+      "fecha": "2026-09-19T11:00:00-05:00",
+      "titulo": "Buenas prácticas en sites remotos",
+      "modalidad": "Virtual",
+      "duracionHoras": 2,
+      "instructor": "Natalia Ríos",
+      "lugar": "Teams",
+      "registro": "",
+      "img": "https://picsum.photos/seed/remote/240/240",
+      "temario": [
+        "Checklist previo a intervención en campo",
+        "Seguridad física y EPP en terreno",
+        "Registro de visitas y custodia de llaves",
+        "Telemetría básica y verificación a distancia"
+      ]
+    }
+  ]
+}
