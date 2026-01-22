@@ -204,213 +204,178 @@
     © 2026 — ALCEA / ASSA ABLOY — Cronograma de capacitación.
   </footer>
 
-  <script>
-    // =======================
-    // 1) Datos de ejemplo 2026 (con temario e imagen de referencia por evento)
-    //     - Cambia las URLs de "img" por las tuyas o quítalas si no quieres imagen.
-    // =======================
-    const capacitaciones = [
-      { fecha: "2026-02-05T09:00:00-05:00",
-        titulo: "Inducción de Seguridad y Accesos",
-        modalidad: "Presencial", duracionHoras: 3, instructor: "Laura Pérez",
-        lugar: "Auditorio Sede Norte", registro: "",
-        img: "https://picsum.photos/seed/security/240/240",   // ejemplo
-        temario: [
-          "Política de seguridad de ALCEA / ASSA ABLOY",
-          "Buenas prácticas en salas técnicas y sites remotos",
-          "Credenciales y niveles de acceso: altas, bajas y modificaciones",
-          "Protocolos de incidentes y reporte inmediato"
-        ]
-      },
-      { fecha: "2026-03-14T10:00:00-05:00",
-        titulo: "Gestión de incidencias y respuesta",
-        modalidad: "Virtual", duracionHoras: 2, instructor: "Carlos Ramírez",
-        lugar: "Teams", registro: "",
-        img: "https://picsum.photos/seed/incident/240/240",   // ejemplo
-        temario: [
-          "Clasificación de incidentes (prioridades y tipologías)",
-          "Flujo de atención: detección → escalamiento → cierre",
-          "KPI de respuesta (MTTA/MTTR) y tableros",
-          "Lecciones aprendidas y post-mortem"
-        ]
-      },
-      { fecha: "2026-05-09T14:00:00-05:00",
-        titulo: "Plataforma ALCEA: administración",
-        modalidad: "Híbrida", duracionHoras: 3, instructor: "María Gómez",
-        lugar: "Sala 2 + Teams", registro: "",
-        img: "https://picsum.photos/seed/platform/240/240",   // ejemplo
-        temario: [
-          "Altas/gestión de usuarios, roles y permisos",
-          "Configuración de sitios y controladores",
-          "Integraciones con VMS/IDS y exportes",
-          "Buenas prácticas de respaldo y auditoría"
-        ]
-      },
-      { fecha: "2026-09-19T11:00:00-05:00",
-        titulo: "Buenas prácticas en sites remotos",
-        modalidad: "Virtual", duracionHoras: 2, instructor: "Natalia Ríos",
-        lugar: "Teams", registro: "",
-        img: "https://picsum.photos/seed/remote/240/240",     // ejemplo
-        temario: [
-          "Checklist previo a intervención en campo",
-          "Seguridad física y EPP en terreno",
-          "Registro de visitas y custodia de llaves",
-          "Telemetría básica y verificación a distancia"
-        ]
-      }
-    ];
+ 
+<script>
+  // === Config ===
+  const RUTA_JSON = "capacitaciones.json"; // si lo pones en otra carpeta, ajusta la ruta
 
-    // =======================
-    // 2) Utilidades de formato
-    // =======================
-    const TZ = "America/Bogota";
-    const meses = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
-    const pad2 = n => String(n).padStart(2,"0");
-    const fmtFecha = d => new Intl.DateTimeFormat("es-CO",{dateStyle:"full", timeStyle:"short", timeZone:TZ}).format(d);
-    const normalizar = s => (s||"").toString().toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu,"");
+  // === Utilidades de formato y UI ===
+  const TZ = "America/Bogota";
+  const mesesLargos = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+  const mesesCortos = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+  const pad2 = n => String(n).padStart(2,"0");
+  const fmtFecha = d => new Intl.DateTimeFormat("es-CO",{dateStyle:"full", timeStyle:"short", timeZone:TZ}).format(d);
+  const normalizar = s => (s||"").toString().toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu,"");
 
-    // =======================
-    // 3) Render
-    // =======================
-    const contenedor = document.getElementById("contenedor");
-    const ui = {
-      mes: document.getElementById("mes"),
-      modalidad: document.getElementById("modalidad"),
-      busqueda: document.getElementById("busqueda"),
-      soloProximos: document.getElementById("soloProximos"),
-      limpiar: document.getElementById("limpiar"),
-      exportCSV: document.getElementById("exportCSV")
-    };
+  // === Elementos ===
+  const contenedor = document.getElementById("contenedor");
+  const ui = {
+    mes: document.getElementById("mes"),
+    modalidad: document.getElementById("modalidad"),
+    busqueda: document.getElementById("busqueda"),
+    soloProximos: document.getElementById("soloProximos"),
+    limpiar: document.getElementById("limpiar"),
+    exportCSV: document.getElementById("exportCSV")
+  };
 
-    function filtrar(lista){
-      const mesSel = ui.mes.value;
-      const modSel = ui.modalidad.value;
-      const q = normalizar(ui.busqueda.value);
-      const ahora = new Date();
-      return lista.filter(ev=>{
-        const d = new Date(ev.fecha);
-        const okMes = mesSel==="todos" || d.getMonth()===Number(mesSel);
-        const okMod = modSel==="todas" || ev.modalidad===modSel;
-        const okQ = !q || [ev.titulo, ev.instructor, ev.lugar, ...(ev.temario||[])].some(x=>normalizar(x).includes(q));
-        const okProx = !ui.soloProximos.checked || d>=ahora;
-        return okMes && okMod && okQ && okProx;
-      }).sort((a,b)=> new Date(a.fecha)-new Date(b.fecha));
+  // === Estado ===
+  let CAPACITACIONES = []; // se llenará desde capacitaciones.json
+
+  // === Carga de datos ===
+  async function cargarDatos(){
+    try{
+      const res = await fetch(RUTA_JSON, { cache: "no-store" });
+      if(!res.ok) throw new Error("No se pudo leer " + RUTA_JSON);
+      const data = await res.json();
+      if(!Array.isArray(data.eventos)) throw new Error("El JSON no contiene 'eventos' como arreglo.");
+      CAPACITACIONES = data.eventos.map(e=>({ ...e })); // shallow copy
+      render();
+    }catch(err){
+      console.error(err);
+      contenedor.innerHTML = `<div class="month"><div class="empty">No pude cargar los datos. Verifica <code>${RUTA_JSON}</code>.</div></div>`;
     }
+  }
 
-    function agruparPorMes(lista){
-      const g=new Map();
-      for(const ev of lista){
-        const d=new Date(ev.fecha);
-        const key=d.getFullYear()+"-"+pad2(d.getMonth()+1);
-        if(!g.has(key)) g.set(key,[]);
-        g.get(key).push(ev);
-      }
-      return [...g.entries()].sort((a,b)=>a[0].localeCompare(b[0]));
-    }
+  // === Filtros y agrupación ===
+  function filtrar(lista){
+    const mesSel = ui.mes.value;
+    const modSel = ui.modalidad.value;
+    const q = normalizar(ui.busqueda.value);
+    const ahora = new Date();
 
-    function render(){
-      const datos=filtrar(capacitaciones);
-      const grupos=agruparPorMes(datos);
-      contenedor.innerHTML="";
-      if(grupos.length===0){
-        contenedor.innerHTML=`<div class="month"><div class="empty">No hay eventos con los filtros aplicados.</div></div>`;
-        return;
-      }
-      for(const [key,evs] of grupos){
-        const [yy,mm]=key.split("-");
-        const bloque=document.createElement("article");
-        bloque.className="month";
-        bloque.innerHTML=`
-          <h3>
-            <span>${meses[Number(mm)-1]} ${yy}</span>
-            <span class="count">${evs.length} evento(s)</span>
-          </h3>
-          <div class="events"></div>
-        `;
-        const zona=bloque.querySelector(".events");
-        for(const ev of evs) zona.appendChild(renderEvento(ev));
-        contenedor.appendChild(bloque);
-      }
-    }
+    return lista.filter(ev=>{
+      const d = new Date(ev.fecha);
+      const okMes = mesSel==="todos" || d.getMonth()===Number(mesSel);
+      const okMod = modSel==="todas" || ev.modalidad===modSel;
+      const corpus = [ev.titulo, ev.instructor, ev.lugar, ...(ev.temario||[])].join(" ");
+      const okQ = !q || normalizar(corpus).includes(q);
+      const okProx = !ui.soloProximos.checked || d>=ahora;
+      return okMes && okMod && okQ && okProx;
+    }).sort((a,b)=> new Date(a.fecha)-new Date(b.fecha));
+  }
 
-    function renderEvento(ev){
+  function agruparPorMes(lista){
+    const g=new Map();
+    for(const ev of lista){
       const d=new Date(ev.fecha);
-      const el=document.createElement("div");
-      el.className="event";
-      const dia=d.getDate();
-      const mesCorto=meses[d.getMonth()].slice(0,3);
-
-      const registroBtn = ev.registro
-        ? `<a class="btn" href="${ev.registro}" target="_blank" rel="noopener">Inscribirme</a>`
-        : "";
-
-      const temarioHTML = (ev.temario && ev.temario.length)
-        ? `<details class="syllabus"><summary>Temario</summary>
-             <div class="body">
-               <ul>${ev.temario.map(t => `<li>${t}</li>`).join("")}</ul>
-             </div>
-           </details>`
-        : "";
-
-      el.innerHTML=`
-        <div class="date">
-          <div class="txt">
-            <div class="d">${dia}</div>
-            <div class="m">${mesCorto}</div>
-          </div>
-        </div>
-        <div class="content">
-          <div class="title">${ev.titulo}</div>
-          <div class="meta">
-            <span class="badge">${fmtFecha(d)}</span>
-            <span class="badge">Modalidad: ${ev.modalidad}</span>
-            <span class="badge">Duración: ${ev.duracionHoras} h</span>
-            <span class="badge">Instructor(a): ${ev.instructor}</span>
-            ${ev.lugar ? `<span class="badge">Lugar: ${ev.lugar}</span>` : ""}
-          </div>
-          ${temarioHTML}
-          <div class="actions">${registroBtn}</div>
-        </div>
-      `;
-
-      // Si hay imagen, la aplicamos como fondo del recuadro de fecha
-      const dateBox = el.querySelector(".date");
-      if (ev.img){
-        dateBox.classList.add("has-img");
-        dateBox.style.backgroundImage = `url('${ev.img}')`;
-      }
-      return el;
+      const key=d.getFullYear()+"-"+pad2(d.getMonth()+1);
+      if(!g.has(key)) g.set(key,[]);
+      g.get(key).push(ev);
     }
+    return [...g.entries()].sort((a,b)=>a[0].localeCompare(b[0]));
+  }
 
-    // Export CSV
-    ui.exportCSV.addEventListener("click", ()=>{
-      const vis=filtrar(capacitaciones);
-      const filas=[["Fecha","Título","Modalidad","Duración (h)","Instructor(a)","Lugar","Registro","Temario","Imagen"]];
-      for(const ev of vis){
-        const d=new Date(ev.fecha);
-        const temarioPlano=(ev.temario||[]).join(" | ");
-        filas.push([fmtFecha(d),ev.titulo,ev.modalidad,ev.duracionHoras,ev.instructor,ev.lugar||"",ev.registro||"",temarioPlano,ev.img||""]);
-      }
-      const csv=filas.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(",")).join("\r\n");
-      const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
-      const url=URL.createObjectURL(blob);
-      const a=document.createElement("a"); a.href=url; a.download="cronograma_2026.csv"; a.click();
-      URL.revokeObjectURL(url);
-    });
+  // === Render ===
+  function render(){
+    const datos=filtrar(CAPACITACIONES);
+    const grupos=agruparPorMes(datos);
+    contenedor.innerHTML="";
+    if(grupos.length===0){
+      contenedor.innerHTML=`<div class="month"><div class="empty">No hay eventos con los filtros aplicados.</div></div>`;
+      return;
+    }
+    for(const [key,evs] of grupos){
+      const [yy,mm]=key.split("-");
+      const bloque=document.createElement("article");
+      bloque.className="month";
+      bloque.innerHTML=`
+        <h3>
+          <span>${mesesLargos[Number(mm)-1]} ${yy}</span>
+          <span class="count">${evs.length} evento(s)</span>
+        </h3>
+        <div class="events"></div>
+      `;
+      const zona=bloque.querySelector(".events");
+      evs.forEach(ev=> zona.appendChild(renderEvento(ev)));
+      contenedor.appendChild(bloque);
+    }
+  }
 
-    // Listeners y reset
-    ["change","input"].forEach(evt=>{
-      ui.mes.addEventListener(evt,render);
-      ui.modalidad.addEventListener(evt,render);
-      ui.busqueda.addEventListener(evt,render);
-      ui.soloProximos.addEventListener(evt,render);
-    });
-    ui.limpiar.addEventListener("click",()=>{
-      ui.mes.value="todos"; ui.modalidad.value="todas";
-      ui.busqueda.value=""; ui.soloProximos.checked=false; render();
-    });
+  function renderEvento(ev){
+    const d=new Date(ev.fecha);
+    const el=document.createElement("div");
+    el.className="event";
+    const dia=d.getDate();
+    const mesCorto=mesesCortos[d.getMonth()];
 
-    render();
-  </script>
+    // URL del formulario con datos del evento
+    const params = new URLSearchParams({ evento: ev.titulo, fecha: d.toISOString() });
+    const urlForm = `inscripcion.html?${params.toString()}`;
+
+    const temarioHTML = (ev.temario && ev.temario.length)
+      ? `<details class="syllabus"><summary>Temario</summary>
+           <div class="body">
+             <ul>${ev.temario.map(t => `<li>${t}</li>`).join("")}</ul>
+           </div>
+         </details>`
+      : "";
+
+    el.innerHTML=`
+      <div class="date${ev.img ? " has-img" : ""}" ${ev.img ? `style="background-image:url('${ev.img}')"`: ""}>
+        <div class="txt">
+          <div class="d">${dia}</div>
+          <div class="m">${mesCorto}</div>
+        </div>
+      </div>
+      <div class="content">
+        <div class="title">${ev.titulo}</div>
+        <div class="meta">
+          <span class="badge">${fmtFecha(d)}</span>
+          <span class="badge">Modalidad: ${ev.modalidad}</span>
+          <span class="badge">Duración: ${ev.duracionHoras} h</span>
+          <span class="badge">Instructor(a): ${ev.instructor}</span>
+          ${ev.lugar ? `<span class="badge">Lugar: ${ev.lugar}</span>` : ""}
+        </div>
+        ${temarioHTML}
+        <div class="actions">
+          ${urlForm}Inscríbete aquí</a>
+        </div>
+      </div>
+    `;
+    return el;
+  }
+
+  // === Export CSV (sobre el estado actual filtrado) ===
+  ui.exportCSV.addEventListener("click", ()=>{
+    const vis = filtrar(CAPACITACIONES);
+    const filas = [["Fecha","Título","Modalidad","Duración (h)","Instructor(a)","Lugar","Registro","Temario","Imagen"]];
+    for(const ev of vis){
+      const d=new Date(ev.fecha);
+      const temarioPlano=(ev.temario||[]).join(" | ");
+      filas.push([fmtFecha(d), ev.titulo, ev.modalidad, ev.duracionHoras, ev.instructor, ev.lugar||"", ev.registro||"", temarioPlano, ev.img||""]);
+    }
+    const csv = filas.map(r=> r.map(x=> `"${String(x).replace(/"/g,'""')}"`).join(",")).join("\r\n");
+    const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url; a.download = "cronograma_2026.csv"; a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  // === Listeners y reset ===
+  ["change","input"].forEach(evt=>{
+    ui.mes.addEventListener(evt, render);
+    ui.modalidad.addEventListener(evt, render);
+    ui.busqueda.addEventListener(evt, render);
+    ui.soloProximos.addEventListener(evt, render);
+  });
+  ui.limpiar.addEventListener("click", ()=>{
+    ui.mes.value="todos"; ui.modalidad.value="todas";
+    ui.busqueda.value=""; ui.soloProximos.checked=false; render();
+  });
+
+  // === Inicio ===
+  cargarDatos();
+</script>
+
 </body>
 </html>
